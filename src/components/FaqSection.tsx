@@ -1,70 +1,102 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
+import { useState } from "react";
+import Link from "next/link";
+import { AnimatePresence, motion } from "framer-motion";
+import { FAQ_ITEMS, FaqItem } from "@/data/welty";
 
-const faqs = [
-  {
-    q: "How do Welty Tech's AI Workflows differ from basic tools like Zapier or Make?",
-    a: "Unlike simple trigger-action zaps that break on subtle data anomalies, Welty Tech builds autonomous agentic pipelines with multi-step reasoning, semantic chunking, custom LLM fine-tuning, vector database memory (RAG), and deterministic fallback guardrails. Our workflows handle ambiguous edge cases, complex API authentication, and enterprise-scale concurrency without human intervention."
-  },
-  {
-    q: 'Can Welty Tech build a full multi-tenant SaaS from zero to production launch?',
-    a: 'Yes. We specialize in greenfield SaaS architecture: multi-tenant database isolation, Stripe/billing subscription engines, enterprise single sign-on (SSO/SAML), role-based access control (RBAC), and automated CI/CD pipelines. We take you from architectural blueprint to audited, scalable production release.'
-  },
-  {
-    q: 'How do you guarantee enterprise data security with artificial intelligence?',
-    a: 'Data privacy is baked into our foundation. We deploy zero-retention API configurations, dedicated private VPC model hosting, on-premise local LLM deployments (e.g. Llama 3 / Mistral), and token-level PII redaction so your proprietary corporate data is never utilized for public model training.'
-  },
-  {
-    q: 'What makes your real-time dashboard design distinct from off-the-shelf BI tools?',
-    a: 'Off-the-shelf BI tools like Tableau or PowerBI often suffer from high latency, clunky rendering, and limited custom UX. Welty Tech designs bespoke WebSocket and Canvas-rendered cockpits that stream millions of live events in sub-50ms with dark-mode glassmorphic aesthetics tailored precisely to your executive workflow.'
-  },
-  {
-    q: 'How does your senior engagement model work?',
-    a: 'You work directly with principal architects, seasoned UI/UX designers, and senior AI systems engineers. We work in rapid, transparent 2-week agile sprints with continuous staging deployments, detailed documentation, and direct Slack/Teams integration with your leadership.'
-  }
-];
+type FaqWithLink = FaqItem & { link?: { label: string; href: string } };
 
-export default function FaqSection() {
-  const [openIndex, setOpenIndex] = useState<number | null>(0);
+export function FaqSection({
+  items = FAQ_ITEMS,
+  roundedTop = false,
+}: {
+  items?: FaqWithLink[];
+  roundedTop?: boolean;
+}) {
+  const [openIds, setOpenIds] = useState<Record<string, boolean>>({});
 
-  const toggle = (index: number) => {
-    setOpenIndex(openIndex === index ? null : index);
+  const toggle = (id: string) => {
+    setOpenIds((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
   return (
-    <section className="section-wrapper">
-      <div className="container">
-        <div className="section-header">
-          <div className="badge-pill">
-            <span className="pulse-dot" />
-            <span>Clarity & Answers</span>
-          </div>
-          <h2 className="section-title">
-            Frequently Asked <br />
-            <span className="gradient-text">Enterprise Questions.</span>
-          </h2>
-          <p className="section-desc">
-            Everything you need to know about our engineering standards, AI workflow capabilities, and delivery methodology.
-          </p>
-        </div>
+    <section
+      id="faq"
+      className={`relative bg-black text-white pt-[8rem] md:pt-[15rem] ${
+        roundedTop ? "pb-[6rem] md:pb-[10rem] md:rounded-t-[8rem]" : ""
+      }`}
+    >
+      <div className="cb-container">
+        <motion.h2
+          initial={{ y: 20 }}
+          whileInView={{ y: 0 }}
+          viewport={{ once: true, margin: "200px 0px" }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          className="text-[4.5rem] md:text-[8rem] font-medium leading-[1] tracking-[-0.02em] mb-[4rem] md:mb-[12rem]"
+        >
+          FAQ
+        </motion.h2>
 
-        <div className="faq-grid">
-          {faqs.map((faq, idx) => (
-            <div key={idx} className={`faq-item ${openIndex === idx ? 'active' : ''}`}>
-              <button className="faq-trigger" onClick={() => toggle(idx)} aria-expanded={openIndex === idx}>
-                <span>{faq.q}</span>
-                <span className="faq-icon-arrow">
-                  <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                    <polyline points="6 9 12 15 18 9"></polyline>
-                  </svg>
-                </span>
-              </button>
-              <div className="faq-content">
-                <p>{faq.a}</p>
+        <div>
+          {items.map((item) => {
+            const isOpen = Boolean(openIds[item.id]);
+            return (
+              <div key={item.id} className="relative">
+                <div className="h-[1px] w-full bg-white/20" />
+                <div className="py-[4rem]">
+                  <button
+                    type="button"
+                    aria-expanded={isOpen}
+                    onClick={() => toggle(item.id)}
+                    className="w-full flex items-start md:items-center justify-between gap-[1.6rem] text-left text-[2.4rem] leading-[1.2] tracking-[0.02em] text-white font-normal bg-transparent border-0 hover:text-[#E5FA3C] transition-colors duration-200"
+                  >
+                    <span>{item.question}</span>
+                    <span
+                      aria-hidden="true"
+                      className={`relative shrink-0 w-[2rem] h-[2rem] mt-[1rem] md:mt-0 transition-all duration-500 ${
+                        isOpen ? "rotate-[135deg] text-[#FA823C]" : "rotate-0"
+                      }`}
+                    >
+                      <span className="absolute left-0 right-0 top-[calc(50%-1px)] h-[2px] bg-current" />
+                      <span className="absolute top-0 bottom-0 left-[calc(50%-1px)] w-[2px] bg-current" />
+                    </span>
+                  </button>
+
+                  <AnimatePresence initial={false}>
+                    {isOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                        className="overflow-hidden"
+                      >
+                        <div className="pt-[1.6rem] md:pt-[4rem] text-[1.8rem] leading-[1.5] text-white/75 max-w-[92rem]">
+                          {item.paragraphs.map((p, pIdx) => (
+                            <p key={pIdx} className={pIdx > 0 ? "mt-[1em]" : ""}>
+                              {p}
+                            </p>
+                          ))}
+                          {item.link && (
+                            <p className="mt-[1.4em]">
+                              <Link
+                                href={item.link.href}
+                                className="text-[#E5FA3C] underline underline-offset-4 hover:text-[#FA823C] transition-colors"
+                              >
+                                {item.link.label} →
+                              </Link>
+                            </p>
+                          )}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
+          <div className="h-[1px] w-full bg-white/20" />
         </div>
       </div>
     </section>

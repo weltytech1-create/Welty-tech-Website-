@@ -1,59 +1,68 @@
-# Welty Tech (welty.in)
+# Welty Tech (`welty.in`)
 
-> **Enterprise SaaS Engineering, High-Performance Web Architectures, Telemetry Cockpits & Autonomous AI Workflows.**
+> **Engineering What's Next.** — Digital product design, custom software development, ERP & CRM solutions, AI automation, private cloud infrastructure, and API integrations.
 
 Official website for **[Welty Tech](https://welty.in)**.
 
 ---
 
-## ⚡ Overview
+## Key Features
 
-Welty Tech builds mission-critical digital infrastructure for forward-thinking enterprises:
-- **Autonomous Agentic AI Workflows**: Resilient, multi-step LLM reasoning pipelines, deterministic guardrails, and automated enterprise task execution.
-- **Enterprise SaaS Platforms**: High-concurrency, multi-tenant cloud software with sub-50ms latency SLAs.
-- **Telemetry & Command Dashboards**: Real-time WebSocket/Canvas data visualization streaming millions of events with zero frame drop.
-- **Modern Web Engineering**: Ultra-fast, responsive web experiences with dark-mode glassmorphic aesthetics.
+- **Modern Responsive UI/UX**: Floating capsule mega-menu navigation, unified mobile morphing drawer, custom cursor, and fluid typography across desktop and mobile.
+- **Core Service Showcases**: Dedicated pages for Digital Product Design, Custom Software Development, ERP & CRM Solutions, AI Solutions & Intelligent Automation, On-Premises & Private Cloud Deployment, and System Integration & API Development.
+- **Formspree Inquiry Integration**: Client intake and quick-contact forms with INR budget tiers and shared brief link (`Drive` / `Figma` / `Dropbox`) submission.
+- **Privacy & Cookies Consent**: Centered animated cookie preference card, dedicated `/cookies` policy page, Footer settings trigger, and `/privacy` policy cross-links.
+- **Technical SEO & Analytics**: Built-in `@vercel/analytics`, `@vercel/speed-insights`, dynamic OpenGraph cards, structured JSON-LD (`Organization`, `Service`, `FAQPage`, `Article`, `BreadcrumbList`), XML image/video sitemap (`/sitemap.xml`), `robots.txt`, `manifest.webmanifest`, and Google Search Console verification metadata support.
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
-- **Framework**: Next.js 16.3 (Turbopack)
+- **Framework**: Next.js 16 (App Router + Turbopack)
 - **Library**: React 19
-- **Language**: TypeScript 5.7
-- **Styling**: Vanilla CSS Design System (Custom Glassmorphism, CSS Custom Properties)
-- **Icons & Effects**: Lucide React, Canvas Confetti
+- **Language**: TypeScript 5
+- **Styling**: Tailwind CSS 4 + Design Tokens (`design-tokens.css`)
+- **Motion & Scrolling**: Framer Motion, Lenis Smooth Scroll, Lucide Icons
+- **Telemetry**: Vercel Analytics & Speed Insights
 
 ---
 
-## 🚀 Getting Started
+## Environment Variables
 
-### 1. Install Dependencies
+Copy `.env.example` to `.env.local` for local overrides or set in Vercel Project Settings:
+
+```bash
+NEXT_PUBLIC_SITE_URL=https://welty.in
+NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION=
+NEXT_PUBLIC_BING_VERIFICATION=
+```
+
+Note: `.npmrc` sets `legacy-peer-deps=true` for clean dependency resolution on Vercel and local installs.
+
+---
+
+## Local Development & Build
+
 ```bash
 npm install
-```
-
-### 2. Development Server
-```bash
 npm run dev
 ```
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-### 3. Production Build
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
 ```bash
+npx next typegen
+npx tsc --noEmit
 npm run build
-npm run start
 ```
 
 ---
 
-## 🌐 Production Domain
+## Contact
 
-- **Primary Domain**: [https://welty.in](https://welty.in)
-- **Engineering Inquiries**: `solutions@welty.in`
+- **Website**: [https://welty.in](https://welty.in)
+- **Email**: `info@welty.in`
+- **Instagram**: [@weltytech](https://www.instagram.com/weltytech)
+- **LinkedIn**: [Welty Tech](https://www.linkedin.com/company/welty-tech/about/)
 
----
-
-## 📄 License
-
-© Welty Tech. All rights reserved.
+© 2026 Welty Tech. All rights reserved.

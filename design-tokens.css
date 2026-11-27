@@ -1,0 +1,143 @@
+/* ==========================================================================
+   Welty Design System Tokens
+   Brand Palette: #FFFFFF (Canvas), #FA823C (Primary Orange), #E5FA3C (Electric Lime)
+   Fluid root scale: 2.66667vw (<768px) -> 0.625vw (>=768px) -> 10px (>=1600px)
+   ========================================================================== */
+
+:root {
+  /* Welty Brand Palette */
+  --color-bg-primary: #ffffff;
+  --color-bg-inverse: #000000;
+  --color-bg-surface: #f4f4f2;
+  --color-bg-tint-peach: #fff4ec;
+  --color-bg-tint-lime: #f8fce3;
+  --color-bg-process-inactive: #eeeeee;
+  --color-bg-stacked-card: #43494c;
+  --color-bg-dark-pill: rgba(255, 255, 255, 0.08);
+  --color-bg-dark-pill-hover: #e5fa3c;
+
+  --color-text-primary: #000000;
+  --color-text-inverse: #ffffff;
+  --color-text-muted: #767676;
+  --color-text-inverse-muted: rgba(255, 255, 255, 0.55);
+  --color-text-inverse-body: rgba(255, 255, 255, 0.72);
+
+  --color-primary: #fa823c;
+  --color-secondary: #e5fa3c;
+  --color-accent: #e5fa3c;
+
+  --color-selection-bg: #fa823c;
+  --color-selection-text: #ffffff;
+
+  --color-border-subtle: rgba(0, 0, 0, 0.1);
+  --color-border-inverse: rgba(255, 255, 255, 0.2);
+  --color-border-inverse-strong: rgba(255, 255, 255, 0.35);
+  --color-overlay-backdrop: rgba(0, 0, 0, 0.35);
+  --color-banner-gradient: linear-gradient(90deg, #000000b8, #00000030);
+
+  /* Typography */
+  --font-sans: "Suisse Intl", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Fluid Root Sizing */
+  --root-size-mobile: 2.66667vw; /* 10px at 375px */
+  --root-size-desktop: 0.625vw;  /* 9px at 1440px */
+  --root-size-max: 10px;         /* >=1600px */
+
+  /* Type Scale (in rem relative to fluid root) */
+  --text-body: 1.4rem;
+  --text-caption-sm: 1.28rem;
+  --text-caption: 1.6rem;
+  --text-caption-mobile: 1.4rem;
+  --text-faq-body: 1.8rem;
+  --text-testimonial: 1.8rem;
+  --text-testimonial-mobile: 2rem;
+  --text-nav: 2rem;
+  --text-lead: 2.4rem;
+  --text-lead-mobile: 2rem;
+  --text-overview: 2.56rem;
+  --text-overview-mobile: 2rem;
+  --text-card-caption: 2rem;
+  --text-card-caption-mobile: 1.7rem;
+  --text-feature-title: 4.2rem;
+  --text-feature-title-mobile: 3.2rem;
+  --text-section: 8rem;
+  --text-section-mobile: 4.5rem;
+  --text-hero: 9rem;
+  --text-hero-mobile: 4.5rem;
+  --text-hero-service-mobile: 5rem;
+  --text-bento-heading-mobile: 4.2rem;
+  --text-summary-body: 2.6rem;
+  --text-summary-caption: 1.28rem;
+  --text-stat: 8rem;
+  --text-stat-mobile: 6rem;
+  --text-tile-title: 2.8rem;
+  --text-tile-title-mobile: 2.4rem;
+
+  /* Line Heights & Letter Spacing */
+  --leading-tight: 1;
+  --leading-snug: 1.1;
+  --leading-normal: 1.2;
+  --leading-relaxed: 1.3;
+  --leading-prose: 1.4;
+  --leading-faq: 1.5;
+
+  --tracking-tighter: -0.03em;
+  --tracking-tight: -0.02em;
+  --tracking-snug: -0.01em;
+  --tracking-normal: 0em;
+  --tracking-wide: 0.01em;
+  --tracking-wider: 0.02em;
+
+  /* Layout & Container Spacing */
+  --container-max-width: 1600px;
+  --container-pad-mobile: 1.5rem;
+  --container-pad-desktop: 12rem;
+  --container-pad-lg: 24rem;
+
+  --space-section-y: 12rem;
+  --space-section-y-lg: 15rem;
+  --space-section-y-mobile: 8rem;
+  --space-hero-top: 20rem;
+  --space-hero-bottom: 10rem;
+  --space-hero-top-mobile: 12rem;
+  --space-hero-bottom-mobile: 6rem;
+  --space-header-gap: 12rem;
+  --space-header-gap-mobile: 4rem;
+
+  /* Grid & Card Gaps */
+  --gap-feature-stack: 1rem;
+  --gap-project-grid: 10rem;
+  --gap-project-grid-mobile: 6rem;
+  --gap-project-stagger: 15rem;
+  --gap-blog-grid: 2rem;
+  --gap-bento-grid: 1.6rem;
+  --gap-bento-grid-mobile: 0.8rem;
+
+  /* Radii */
+  --radius-testimonial: 0.8rem;
+  --radius-tooltip: 1.6rem;
+  --radius-card: 2rem;
+  --radius-section: 8rem;
+  --radius-pill: 99999px;
+
+  /* Shadows */
+  --shadow-dropdown: 0 20px 50px rgba(0, 0, 0, 0.08);
+  --shadow-tooltip: 0 18px 40px rgba(0, 0, 0, 0.16);
+  --shadow-card-elevated: 0 24px 60px rgba(250, 130, 60, 0.12);
+
+  /* Motion & Easing */
+  --ease-cuberto: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-card-fan: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-spring-icon: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-underline: cubic-bezier(0.19, 1, 0.22, 1);
+
+  --duration-fast: 0.2s;
+  --duration-base: 0.4s;
+  --duration-slow: 0.8s;
+  --duration-cinema: 1.2s;
+}
