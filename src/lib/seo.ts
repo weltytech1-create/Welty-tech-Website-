@@ -144,6 +144,11 @@ export function buildOrganizationJsonLd() {
         email: SITE_EMAIL,
         slogan: SITE_TAGLINE,
         description: SITE_DESCRIPTION,
+        identifier: {
+          "@type": "PropertyValue",
+          propertyID: "UDYAM",
+          value: "UDYAM-AP-04-0157230",
+        },
         sameAs: [LINKEDIN_URL, INSTAGRAM_CANONICAL_URL, X_URL],
         knowsAbout: AREAS_OF_FOCUS.map((item) => item.title),
         hasOfferCatalog: {

@@ -125,27 +125,40 @@ export function Footer() {
 
         {/* Bottom Legal & Official Social Icons */}
         <div className="mt-[6rem] md:mt-[10rem] pt-[3.6rem] border-t border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-[2.8rem]">
-          <div className="flex flex-wrap items-center gap-x-[2.4rem] gap-y-[1.2rem] text-[1.6rem] leading-[1.3]">
-            <Link
-              href={FOOTER_CONTENT.privacyHref}
-              className="text-white no-underline hover:text-[#E5FA3C] transition-colors"
-            >
-              Privacy Policy
-            </Link>
-            <Link
-              href={FOOTER_CONTENT.cookiesHref}
-              className="text-white no-underline hover:text-[#E5FA3C] transition-colors"
-            >
-              Cookies Policy
-            </Link>
-            <button
-              type="button"
-              onClick={openCookieSettings}
-              className="cursor-pointer bg-transparent p-0 text-left text-[1.6rem] leading-[1.3] text-white/75 hover:text-[#E5FA3C] transition-colors"
-            >
-              Cookie Settings
-            </button>
-            <span className="text-white/50">{FOOTER_CONTENT.copyright}</span>
+          <div className="flex flex-col items-start gap-[1.4rem]">
+            <div className="flex flex-wrap items-center gap-x-[2.4rem] gap-y-[1.2rem] text-[1.6rem] leading-[1.3]">
+              <Link
+                href={FOOTER_CONTENT.privacyHref}
+                className="text-white no-underline hover:text-[#E5FA3C] transition-colors"
+              >
+                Privacy Policy
+              </Link>
+              <Link
+                href={FOOTER_CONTENT.cookiesHref}
+                className="text-white no-underline hover:text-[#E5FA3C] transition-colors"
+              >
+                Cookies Policy
+              </Link>
+              <button
+                type="button"
+                onClick={openCookieSettings}
+                className="cursor-pointer bg-transparent p-0 text-left text-[1.6rem] leading-[1.3] text-white/75 hover:text-[#E5FA3C] transition-colors"
+              >
+                Cookie Settings
+              </button>
+              <span className="text-white/50">{FOOTER_CONTENT.copyright}</span>
+            </div>
+
+            <div className="inline-flex flex-wrap items-center gap-[0.8rem] rounded-full border border-white/12 bg-white/[0.04] px-[1.4rem] py-[0.55rem] text-[1.35rem] leading-[1.3] text-white/65">
+              <span
+                aria-hidden="true"
+                className="h-[0.6rem] w-[0.6rem] rounded-full bg-[#E5FA3C] shrink-0"
+              />
+              <span>MSME (Udyam) Reg. No:</span>
+              <span className="font-medium tracking-[0.02em] text-white">
+                {FOOTER_CONTENT.udyamRegistration}
+              </span>
+            </div>
           </div>
 
           <div className="flex items-center gap-[1.2rem]">

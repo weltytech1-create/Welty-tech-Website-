@@ -1170,6 +1170,7 @@ export const FOOTER_CONTENT = {
   privacyHref: "/privacy",
   cookiesHref: "/cookies",
   copyright: "© 2026 Welty Tech",
+  udyamRegistration: "UDYAM-AP-04-0157230",
   socials: [
     {
       name: "Instagram",
