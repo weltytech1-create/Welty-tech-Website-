@@ -3,6 +3,14 @@
 import { useState, FormEvent } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { FORMSPREE_ENDPOINT, submitToFormspree } from "@/lib/formspree";
+import {
+  INPUT_LIMITS,
+  isValidEmailAddress,
+  isValidPhoneInput,
+  sanitizeMultilineInput,
+  sanitizeSingleLineInput,
+  validateSafeAttachmentUrl,
+} from "@/lib/security";
 
 export function ServiceQuickContact({ heading }: { heading: string }) {
   const [name, setName] = useState("");
@@ -11,44 +19,69 @@ export function ServiceQuickContact({ heading }: { heading: string }) {
   const [description, setDescription] = useState("");
   const [attachmentLink, setAttachmentLink] = useState("");
   const [honeypot, setHoneypot] = useState("");
-  const [touched, setTouched] = useState<{ name?: boolean; email?: boolean }>({});
+  const [touched, setTouched] = useState<{
+    name?: boolean;
+    email?: boolean;
+    phone?: boolean;
+    attachmentLink?: boolean;
+  }>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
-  const nameValid = name.trim().length > 0;
-  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
-  const formValid = nameValid && emailValid;
+  const safeName = sanitizeSingleLineInput(name, INPUT_LIMITS.name);
+  const safeEmail = sanitizeSingleLineInput(email, INPUT_LIMITS.email);
+  const safePhone = sanitizeSingleLineInput(phone, INPUT_LIMITS.phone);
+  const attachmentValidation = validateSafeAttachmentUrl(attachmentLink);
+
+  const nameValid = safeName.length > 0;
+  const emailValid = isValidEmailAddress(email);
+  const phoneValid = isValidPhoneInput(phone);
+  const formValid =
+    nameValid && emailValid && phoneValid && attachmentValidation.valid;
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setTouched({ name: true, email: true });
+    setTouched({
+      name: true,
+      email: true,
+      phone: true,
+      attachmentLink: true,
+    });
     setSubmitError("");
     if (!formValid || submitting) return;
 
+    if (honeypot.trim().length > 0) {
+      setSubmitted(true);
+      return;
+    }
+
     setSubmitting(true);
 
+    const safeHeading = sanitizeSingleLineInput(heading, 120);
+    const safeDescription = sanitizeMultilineInput(
+      description,
+      INPUT_LIMITS.message
+    );
+
     const formData = new FormData();
-    formData.append("name", name.trim());
-    formData.append("email", email.trim());
-    formData.append("_replyto", email.trim());
-    if (phone.trim()) {
-      formData.append("phone", phone.trim());
+    formData.append("name", safeName);
+    formData.append("email", safeEmail);
+    formData.append("_replyto", safeEmail);
+    if (safePhone) {
+      formData.append("phone", safePhone);
     }
-    if (description.trim()) {
-      formData.append("message", description.trim());
+    if (safeDescription) {
+      formData.append("message", safeDescription);
     }
-    if (attachmentLink.trim()) {
-      formData.append("attachment_link", attachmentLink.trim());
+    if (attachmentValidation.valid && attachmentValidation.normalizedUrl) {
+      formData.append("attachment_link", attachmentValidation.normalizedUrl);
     }
-    formData.append("source", `Service Quick Contact (${heading})`);
+    formData.append("source", `Service Quick Contact (${safeHeading})`);
     formData.append(
       "_subject",
-      `Quick Service Inquiry (${heading}) from ${name.trim()} — Welty Tech`
+      `Quick Service Inquiry (${safeHeading}) from ${safeName} — Welty Tech`
     );
-    if (honeypot) {
-      formData.append("_gotcha", honeypot);
-    }
 
     const result = await submitToFormspree(formData);
     setSubmitting(false);
@@ -106,11 +139,11 @@ export function ServiceQuickContact({ heading }: { heading: string }) {
                     ✓
                   </div>
                   <h3 className="text-[3.2rem] md:text-[4.8rem] font-normal leading-[1.1] text-white">
-                    Thank you, {name}!
+                    Thank you, {safeName}!
                   </h3>
                   <p className="mt-[1.6rem] text-[1.9rem] md:text-[2.2rem] leading-[1.4] text-white/80 max-w-[60rem]">
                     We&apos;ve received your project brief and will get back to{" "}
-                    <span className="text-white underline">{email}</span> within
+                    <span className="text-white underline">{safeEmail}</span> within
                     one business day.
                   </p>
                   <button
@@ -148,8 +181,8 @@ export function ServiceQuickContact({ heading }: { heading: string }) {
                     value={honeypot}
                     onChange={(e) => setHoneypot(e.target.value)}
                     tabIndex={-1}
-                    autoComplete="off"
-                    className="hidden"
+                    autoComplete="new-password"
+                    className="pointer-events-none absolute -left-[9999px] h-px w-px overflow-hidden opacity-0"
                     aria-hidden="true"
                   />
 
@@ -163,6 +196,7 @@ export function ServiceQuickContact({ heading }: { heading: string }) {
                         name="name"
                         type="text"
                         required
+                        maxLength={INPUT_LIMITS.name}
                         placeholder="Name *"
                         value={name}
                         onBlur={() => setTouched((t) => ({ ...t, name: true }))}
@@ -185,6 +219,7 @@ export function ServiceQuickContact({ heading }: { heading: string }) {
                         name="email"
                         type="email"
                         required
+                        maxLength={INPUT_LIMITS.email}
                         placeholder="Email *"
                         value={email}
                         onBlur={() => setTouched((t) => ({ ...t, email: true }))}
@@ -208,11 +243,18 @@ export function ServiceQuickContact({ heading }: { heading: string }) {
                         id="qc-phone"
                         name="phone"
                         type="tel"
+                        maxLength={INPUT_LIMITS.phone}
                         placeholder="Phone"
                         value={phone}
+                        onBlur={() => setTouched((t) => ({ ...t, phone: true }))}
                         onChange={(e) => setPhone(e.target.value)}
                         className="w-full bg-transparent border-0 border-b border-white/25 focus:border-[#FA823C] focus:outline-none py-[1.3rem] md:py-[2rem] text-[2rem] leading-[1] text-white placeholder:text-white/50 transition-colors"
                       />
+                      {touched.phone && !phoneValid && (
+                        <p className="mt-[0.8rem] text-[1.4rem] text-[#FA823C]">
+                          Please enter a valid phone number
+                        </p>
+                      )}
                     </div>
 
                     <div>
@@ -223,6 +265,7 @@ export function ServiceQuickContact({ heading }: { heading: string }) {
                         id="qc-desc"
                         name="message"
                         type="text"
+                        maxLength={INPUT_LIMITS.message}
                         placeholder="Description"
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
@@ -262,10 +305,14 @@ export function ServiceQuickContact({ heading }: { heading: string }) {
                         <input
                           id="qc-attachment-link"
                           name="attachment_link"
-                          type="text"
+                          type="url"
                           inputMode="url"
+                          maxLength={INPUT_LIMITS.attachmentLink}
                           placeholder="Paste Google Drive, Figma, or Dropbox link"
                           value={attachmentLink}
+                          onBlur={() =>
+                            setTouched((t) => ({ ...t, attachmentLink: true }))
+                          }
                           onChange={(e) => setAttachmentLink(e.target.value)}
                           className="w-full bg-transparent border-0 border-b border-white/25 focus:border-[#FA823C] focus:outline-none py-[1.2rem] pr-[3.2rem] text-[1.8rem] leading-[1.2] text-white placeholder:text-white/45 transition-colors"
                         />
@@ -280,6 +327,11 @@ export function ServiceQuickContact({ heading }: { heading: string }) {
                           </button>
                         )}
                       </div>
+                      {touched.attachmentLink && !attachmentValidation.valid && (
+                        <p role="alert" className="mt-[0.8rem] text-[1.4rem] text-[#FA823C]">
+                          {attachmentValidation.error}
+                        </p>
+                      )}
                     </div>
 
                     <button

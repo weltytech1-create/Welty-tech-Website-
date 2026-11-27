@@ -4,6 +4,13 @@ import { useState, FormEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CONTACT_CONFIG } from "@/data/welty";
 import { FORMSPREE_ENDPOINT, submitToFormspree } from "@/lib/formspree";
+import {
+  INPUT_LIMITS,
+  isValidEmailAddress,
+  sanitizeMultilineInput,
+  sanitizeSingleLineInput,
+  validateSafeAttachmentUrl,
+} from "@/lib/security";
 
 export function ContactForm() {
   const [selectedInterests, setSelectedInterests] = useState<string[]>([
@@ -17,7 +24,11 @@ export function ContactForm() {
   );
   const [attachmentLink, setAttachmentLink] = useState<string>("");
   const [honeypot, setHoneypot] = useState("");
-  const [touched, setTouched] = useState<{ name?: boolean; email?: boolean }>({});
+  const [touched, setTouched] = useState<{
+    name?: boolean;
+    email?: boolean;
+    attachmentLink?: boolean;
+  }>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [submitted, setSubmitted] = useState(false);
@@ -30,41 +41,55 @@ export function ContactForm() {
     );
   };
 
-  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
-  const nameValid = name.trim().length > 0;
-  const formValid = nameValid && emailValid;
+  const safeName = sanitizeSingleLineInput(name, INPUT_LIMITS.name);
+  const safeEmail = sanitizeSingleLineInput(email, INPUT_LIMITS.email);
+  const attachmentValidation = validateSafeAttachmentUrl(attachmentLink);
+
+  const emailValid = isValidEmailAddress(email);
+  const nameValid = safeName.length > 0;
+  const formValid = nameValid && emailValid && attachmentValidation.valid;
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setTouched({ name: true, email: true });
+    setTouched({ name: true, email: true, attachmentLink: true });
     setSubmitError("");
     if (!formValid || submitting) return;
 
+    if (honeypot.trim().length > 0) {
+      setSubmitted(true);
+      return;
+    }
+
     setSubmitting(true);
 
+    const allowedInterests = selectedInterests.filter((item) =>
+      CONTACT_CONFIG.interests.includes(item)
+    );
+    const safeBudget = CONTACT_CONFIG.budgets.includes(selectedBudget)
+      ? selectedBudget
+      : CONTACT_CONFIG.budgets[1];
+    const safeDetails = sanitizeMultilineInput(details, INPUT_LIMITS.message);
+
     const formData = new FormData();
-    formData.append("name", name.trim());
-    formData.append("email", email.trim());
-    formData.append("_replyto", email.trim());
+    formData.append("name", safeName);
+    formData.append("email", safeEmail);
+    formData.append("_replyto", safeEmail);
     formData.append(
       "interests",
-      selectedInterests.join(", ") || "General Inquiry"
+      allowedInterests.join(", ") || "General Inquiry"
     );
-    formData.append("budget", `${selectedBudget} INR`);
-    if (details.trim()) {
-      formData.append("message", details.trim());
+    formData.append("budget", `${safeBudget} INR`);
+    if (safeDetails) {
+      formData.append("message", safeDetails);
     }
-    if (attachmentLink.trim()) {
-      formData.append("attachment_link", attachmentLink.trim());
+    if (attachmentValidation.valid && attachmentValidation.normalizedUrl) {
+      formData.append("attachment_link", attachmentValidation.normalizedUrl);
     }
     formData.append("source", "Contacts Page");
     formData.append(
       "_subject",
-      `New Project Inquiry from ${name.trim()} — Welty Tech`
+      `New Project Inquiry from ${safeName} — Welty Tech`
     );
-    if (honeypot) {
-      formData.append("_gotcha", honeypot);
-    }
 
     const result = await submitToFormspree(formData);
     setSubmitting(false);
@@ -95,10 +120,10 @@ export function ContactForm() {
               Request received!
             </h2>
             <p className="mt-[1.8rem] text-[2rem] md:text-[2.4rem] leading-[1.4] text-black/80 max-w-[60rem]">
-              Thanks, <span className="font-medium text-black">{name}</span>. Our
+              Thanks, <span className="font-medium text-black">{safeName}</span>. Our
               team at Welty Tech will review your brief ({selectedInterests.join(", ") || "Project Inquiry"} ·{" "}
               {selectedBudget} INR) and reply to{" "}
-              <span className="underline">{email}</span> within one business day.
+              <span className="underline">{safeEmail}</span> within one business day.
             </p>
             <button
               type="button"
@@ -135,8 +160,8 @@ export function ContactForm() {
               value={honeypot}
               onChange={(e) => setHoneypot(e.target.value)}
               tabIndex={-1}
-              autoComplete="off"
-              className="hidden"
+              autoComplete="new-password"
+              className="pointer-events-none absolute -left-[9999px] h-px w-px overflow-hidden opacity-0"
               aria-hidden="true"
             />
 
@@ -178,6 +203,7 @@ export function ContactForm() {
                   name="name"
                   type="text"
                   required
+                  maxLength={INPUT_LIMITS.name}
                   placeholder="Your name *"
                   value={name}
                   onBlur={() => setTouched((t) => ({ ...t, name: true }))}
@@ -200,6 +226,7 @@ export function ContactForm() {
                   name="email"
                   type="email"
                   required
+                  maxLength={INPUT_LIMITS.email}
                   placeholder="Email *"
                   value={email}
                   onBlur={() => setTouched((t) => ({ ...t, email: true }))}
@@ -221,6 +248,7 @@ export function ContactForm() {
                   id="contact-details"
                   name="message"
                   rows={3}
+                  maxLength={INPUT_LIMITS.message}
                   placeholder="Tell us about your project"
                   value={details}
                   onChange={(e) => setDetails(e.target.value)}
@@ -282,10 +310,14 @@ export function ContactForm() {
                 <input
                   id="contact-attachment-link"
                   name="attachment_link"
-                  type="text"
+                  type="url"
                   inputMode="url"
+                  maxLength={INPUT_LIMITS.attachmentLink}
                   placeholder="Paste Google Drive, Figma, Notion, or Dropbox link"
                   value={attachmentLink}
+                  onBlur={() =>
+                    setTouched((t) => ({ ...t, attachmentLink: true }))
+                  }
                   onChange={(e) => setAttachmentLink(e.target.value)}
                   className="w-full bg-transparent border-0 border-b border-black/20 focus:border-[#FA823C] focus:outline-none py-[1.4rem] pr-[3.6rem] text-[1.9rem] md:text-[2.2rem] text-black placeholder:text-black/40 transition-colors"
                 />
@@ -300,6 +332,12 @@ export function ContactForm() {
                   </button>
                 )}
               </div>
+
+              {touched.attachmentLink && !attachmentValidation.valid && (
+                <p role="alert" className="text-[1.4rem] text-[#FA823C]">
+                  {attachmentValidation.error}
+                </p>
+              )}
 
               <p className="text-[1.4rem] leading-[1.4] text-black/45">
                 Share a view-only Google Drive, Figma, Notion, or Dropbox link so our team can review your files immediately.

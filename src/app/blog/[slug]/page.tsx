@@ -12,6 +12,8 @@ import {
   serializeJsonLd,
 } from "@/lib/seo";
 
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   return BLOG_ENTRIES.map((post) => ({ slug: post.slug }));
 }
@@ -24,11 +26,15 @@ export async function generateMetadata({
   const { slug } = await params;
   const post = BLOG_ENTRIES.find((p) => p.slug === slug);
   if (!post) {
-    return buildPageMetadata({
-      title: "Blog",
-      description: "Design, custom software engineering and AI insights from Welty Tech.",
-      path: `/blog/${slug}`,
-    });
+    return {
+      ...buildPageMetadata({
+        title: "Blog",
+        description:
+          "Design, custom software engineering and AI insights from Welty Tech.",
+        path: "/blog",
+      }),
+      robots: { index: false, follow: false },
+    };
   }
   return buildPageMetadata({
     title: post.title,

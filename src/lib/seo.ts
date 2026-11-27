@@ -1,8 +1,26 @@
 import type { Metadata } from "next";
 
-export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, "") ||
-  "https://welty.in";
+const DEFAULT_SITE_URL = "https://welty.in";
+
+function resolveSiteUrl(rawUrl?: string): string {
+  const candidate = rawUrl?.trim();
+  if (!candidate) return DEFAULT_SITE_URL;
+
+  try {
+    const parsed = new URL(candidate);
+    const isLocalHttp =
+      parsed.protocol === "http:" &&
+      (parsed.hostname === "localhost" || parsed.hostname === "127.0.0.1");
+    if (parsed.protocol !== "https:" && !isLocalHttp) {
+      return DEFAULT_SITE_URL;
+    }
+    return parsed.origin;
+  } catch {
+    return DEFAULT_SITE_URL;
+  }
+}
+
+export const SITE_URL = resolveSiteUrl(process.env.NEXT_PUBLIC_SITE_URL);
 
 export const SITE_NAME = "Welty Tech";
 export const SITE_TAGLINE = "Engineering What's Next.";
@@ -124,7 +142,12 @@ export function buildPageMetadata({
 }
 
 export function serializeJsonLd(data: unknown): string {
-  return JSON.stringify(data).replace(/</g, "\\u003c");
+  return JSON.stringify(data)
+    .replace(/</g, "\\u003c")
+    .replace(/>/g, "\\u003e")
+    .replace(/&/g, "\\u0026")
+    .replace(/\u2028/g, "\\u2028")
+    .replace(/\u2029/g, "\\u2029");
 }
 
 export function buildOrganizationJsonLd() {

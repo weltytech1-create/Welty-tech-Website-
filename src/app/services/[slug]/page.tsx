@@ -24,6 +24,8 @@ import {
 
 const SLUGS = Object.keys(SERVICE_DETAILS) as ServiceSlug[];
 
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   return SLUGS.map((slug) => ({ slug }));
 }
@@ -36,12 +38,15 @@ export async function generateMetadata({
   const { slug } = await params;
   const service = SERVICE_DETAILS[slug as ServiceSlug];
   if (!service) {
-    return buildPageMetadata({
-      title: "Service",
-      description:
-        "Digital product design, custom software development, ERP & CRM, AI automation, private cloud and API integrations by Welty Tech.",
-      path: `/services/${slug}`,
-    });
+    return {
+      ...buildPageMetadata({
+        title: "Service",
+        description:
+          "Digital product design, custom software development, ERP & CRM, AI automation, private cloud and API integrations by Welty Tech.",
+        path: "/services",
+      }),
+      robots: { index: false, follow: false },
+    };
   }
   return buildPageMetadata({
     title: service.metaTitle.replace(/\s*\|\s*Welty Tech$/i, ""),

@@ -10,6 +10,37 @@ export interface CookieConsentState {
   updatedAt: string;
 }
 
+const MAX_CONSENT_PAYLOAD_LENGTH = 512;
+
+function parseConsentPayload(raw: string): CookieConsentState | null {
+  if (!raw || raw.length > MAX_CONSENT_PAYLOAD_LENGTH) return null;
+
+  try {
+    const parsed = JSON.parse(raw) as Partial<CookieConsentState> | null;
+    if (
+      parsed &&
+      typeof parsed === "object" &&
+      parsed.necessary === true &&
+      typeof parsed.analytics === "boolean" &&
+      typeof parsed.preferences === "boolean" &&
+      typeof parsed.updatedAt === "string" &&
+      parsed.updatedAt.length <= 40 &&
+      Number.isFinite(Date.parse(parsed.updatedAt))
+    ) {
+      return {
+        necessary: true,
+        analytics: parsed.analytics,
+        preferences: parsed.preferences,
+        updatedAt: parsed.updatedAt,
+      };
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+}
+
 function readConsentCookieFallback(): CookieConsentState | null {
   if (typeof document === "undefined") return null;
 
@@ -18,24 +49,9 @@ function readConsentCookieFallback(): CookieConsentState | null {
     const [rawName, ...rawValueParts] = rawCookie.trim().split("=");
     if (rawName === "welty_consent_prefs") {
       try {
-        const parsed = JSON.parse(
+        return parseConsentPayload(
           decodeURIComponent(rawValueParts.join("="))
-        ) as Partial<CookieConsentState> | null;
-        if (
-          parsed &&
-          typeof parsed === "object" &&
-          parsed.necessary === true &&
-          typeof parsed.analytics === "boolean" &&
-          typeof parsed.preferences === "boolean" &&
-          typeof parsed.updatedAt === "string"
-        ) {
-          return {
-            necessary: true,
-            analytics: parsed.analytics,
-            preferences: parsed.preferences,
-            updatedAt: parsed.updatedAt,
-          };
-        }
+        );
       } catch {
         return null;
       }
@@ -51,22 +67,8 @@ export function readCookieConsent(): CookieConsentState | null {
   try {
     const raw = window.localStorage.getItem(COOKIE_STORAGE_KEY);
     if (raw) {
-      const parsed = JSON.parse(raw) as Partial<CookieConsentState> | null;
-      if (
-        parsed &&
-        typeof parsed === "object" &&
-        parsed.necessary === true &&
-        typeof parsed.analytics === "boolean" &&
-        typeof parsed.preferences === "boolean" &&
-        typeof parsed.updatedAt === "string"
-      ) {
-        return {
-          necessary: true,
-          analytics: parsed.analytics,
-          preferences: parsed.preferences,
-          updatedAt: parsed.updatedAt,
-        };
-      }
+      const parsed = parseConsentPayload(raw);
+      if (parsed) return parsed;
     }
   } catch {
     // Fallback to cookie storage below if localStorage is blocked.
@@ -114,7 +116,9 @@ export function writeCookieConsent(choices: {
 
     try {
       const serialized = encodeURIComponent(JSON.stringify(nextState));
-      document.cookie = `welty_consent_prefs=${serialized}; path=/; max-age=15552000; SameSite=Lax`;
+      const secureAttr =
+        window.location.protocol === "https:" ? "; Secure" : "";
+      document.cookie = `welty_consent_prefs=${serialized}; path=/; max-age=15552000; SameSite=Lax${secureAttr}`;
     } catch {
       // Ignore cookie write errors cleanly.
     }
