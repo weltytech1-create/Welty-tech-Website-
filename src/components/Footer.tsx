@@ -48,6 +48,21 @@ function LinkedInIcon({ className = "w-[1.95rem] h-[1.95rem]" }: { className?: s
   );
 }
 
+function LocationPinIcon({ className = "w-[1.45rem] h-[1.45rem]" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
+      <path
+        d="M12 21s-6.5-5.65-6.5-11a6.5 6.5 0 1 1 13 0c0 5.35-6.5 11-6.5 11Z"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle cx="12" cy="10" r="2.25" stroke="currentColor" strokeWidth="2" />
+    </svg>
+  );
+}
+
 export function Footer() {
   return (
     <footer
@@ -149,15 +164,25 @@ export function Footer() {
               <span className="text-white/50">{FOOTER_CONTENT.copyright}</span>
             </div>
 
-            <div className="inline-flex flex-wrap items-center gap-[0.8rem] rounded-full border border-white/12 bg-white/[0.04] px-[1.4rem] py-[0.55rem] text-[1.35rem] leading-[1.3] text-white/65">
-              <span
-                aria-hidden="true"
-                className="h-[0.6rem] w-[0.6rem] rounded-full bg-[#E5FA3C] shrink-0"
-              />
-              <span>MSME (Udyam) Reg. No:</span>
-              <span className="font-medium tracking-[0.02em] text-white">
-                {FOOTER_CONTENT.udyamRegistration}
-              </span>
+            <div className="flex flex-wrap items-center gap-[1rem]">
+              <div className="inline-flex flex-wrap items-center gap-[0.8rem] rounded-full border border-white/12 bg-white/[0.04] px-[1.4rem] py-[0.55rem] text-[1.35rem] leading-[1.3] text-white/65">
+                <span
+                  aria-hidden="true"
+                  className="h-[0.6rem] w-[0.6rem] rounded-full bg-[#E5FA3C] shrink-0"
+                />
+                <span>MSME (Udyam) Reg. No:</span>
+                <span className="font-medium tracking-[0.02em] text-white">
+                  {FOOTER_CONTENT.udyamRegistration}
+                </span>
+              </div>
+
+              <div className="inline-flex flex-wrap items-center gap-[0.7rem] rounded-full border border-white/12 bg-white/[0.04] px-[1.4rem] py-[0.55rem] text-[1.35rem] leading-[1.3] text-white/65">
+                <LocationPinIcon className="w-[1.4rem] h-[1.4rem] text-[#FA823C] shrink-0" />
+                <span>Location:</span>
+                <span className="font-medium tracking-[0.02em] text-white">
+                  {FOOTER_CONTENT.location}
+                </span>
+              </div>
             </div>
           </div>
 

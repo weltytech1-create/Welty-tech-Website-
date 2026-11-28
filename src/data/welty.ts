@@ -1171,6 +1171,7 @@ export const FOOTER_CONTENT = {
   cookiesHref: "/cookies",
   copyright: "© 2026 Welty Tech",
   udyamRegistration: "UDYAM-AP-04-0157230",
+  location: "Guntur - 522001",
   socials: [
     {
       name: "Instagram",
