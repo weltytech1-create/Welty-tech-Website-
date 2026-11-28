@@ -44,6 +44,7 @@
 html {
   scrollbar-width: thin;
   scrollbar-gutter: stable;
+  overflow-x: clip;
   text-align: left;
   -webkit-text-size-adjust: 100%;
   -webkit-font-smoothing: antialiased;
@@ -148,6 +149,14 @@ body {
   padding: 0 2.8rem;
   font-size: 2rem;
   font-weight: 500;
+}
+
+@media (max-width: 767px) {
+  .cb-cta-banner-mobile {
+    height: 4.4rem;
+    padding: 0 2.2rem;
+    font-size: 1.55rem;
+  }
 }
 
 .cb-cta-lg {

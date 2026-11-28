@@ -23,7 +23,7 @@ export function PreviewSection() {
           animate={{ y: 0, scale: 1 }}
           transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
           data-cursor-text="Explore"
-          className="relative grid min-h-[30rem] aspect-[4/3] md:min-h-0 md:aspect-[1920/780] rounded-[2rem] overflow-hidden transform-gpu bg-black"
+          className="relative grid w-full min-w-0 grid-cols-1 aspect-[355/250] md:aspect-[1920/780] rounded-[2rem] overflow-hidden transform-gpu bg-black"
         >
           <motion.div
             style={{ scale: videoScale }}
@@ -48,16 +48,16 @@ export function PreviewSection() {
           />
 
           <div
-            className="relative flex flex-col justify-center gap-[2.2rem] md:gap-[2.6rem] px-[2.6rem] py-[3.2rem] md:px-[10rem] md:py-[4.8rem] text-white pointer-events-none"
+            className="relative w-full min-w-0 flex flex-col justify-center gap-[1.5rem] md:gap-[2.6rem] px-[2.2rem] py-[2.2rem] md:px-[10rem] md:py-[4.8rem] text-white pointer-events-none"
             style={{
               background: "var(--color-banner-gradient)",
             }}
           >
-            <div className="grid gap-[1.2rem] md:gap-[1.6rem] max-w-[48.4rem]">
-              <h2 className="text-[3.4rem] md:text-[6.8rem] font-medium leading-[1.08] md:leading-[1] tracking-[-0.01em]">
+            <div className="grid min-w-0 gap-[0.8rem] md:gap-[1.6rem] max-w-full md:max-w-[48.4rem]">
+              <h2 className="text-[2.4rem] md:text-[6.8rem] font-medium leading-[1.12] md:leading-[1] tracking-[-0.01em]">
                 {PREVIEW_BANNER.title}
               </h2>
-              <p className="text-[1.75rem] md:text-[2.5rem] leading-[1.3] md:leading-[1.22] font-normal text-white/95">
+              <p className="text-[1.4rem] md:text-[2.5rem] leading-[1.35] md:leading-[1.22] font-normal text-white/95">
                 {PREVIEW_BANNER.description}
               </p>
             </div>
@@ -65,7 +65,7 @@ export function PreviewSection() {
             <div className="relative z-[2] self-start pointer-events-auto">
               <Link
                 href={PREVIEW_BANNER.ctaHref}
-                className="cb-cta cb-cta-md cb-cta-fill-inverse"
+                className="cb-cta cb-cta-md cb-cta-banner-mobile cb-cta-fill-inverse"
               >
                 <span className="cb-cta-label">
                   <span data-text={PREVIEW_BANNER.ctaLabel}>
